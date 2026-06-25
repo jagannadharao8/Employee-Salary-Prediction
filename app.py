@@ -1,3 +1,10 @@
+"""
+Streamlit Web Dashboard for Employee Salary Prediction.
+
+This application provides an interactive UI to filter employee data,
+run a pre-trained XGBoost model to predict salaries, and view
+rich analytical metrics, charts, and SHAP explainability plots.
+"""
 import streamlit as st
 import joblib
 import pandas as pd

@@ -1,3 +1,11 @@
+"""
+Machine Learning Training Pipeline for Employee Salary Prediction.
+
+This script performs data loading, custom feature engineering, 
+handles class imbalance using SMOTE, trains multiple models, 
+performs hyperparameter tuning on an XGBoost classifier, 
+and generates EDA/SHAP plots. The final pipeline is saved as model.joblib.
+"""
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
