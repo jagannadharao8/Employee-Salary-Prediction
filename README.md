@@ -8,10 +8,21 @@
 
 A professional, end-to-end Machine Learning pipeline and Interactive Dashboard built to predict employee salaries based on demographic and professional features.
 
+![Dashboard Preview](dashboard.png)
+
 ---
 
 ## 🚀 Problem Statement
 Predicting whether an employee's income exceeds `$50K/yr` based on census data. This project solves the problem using advanced Machine Learning techniques, specifically addressing class imbalance and prioritizing model explainability (XAI) so stakeholders can understand *why* the model makes its decisions.
+
+## 📂 Repository Structure
+```text
+├── app.py                # Streamlit Web Dashboard
+├── train_model.py        # ML Training Pipeline & XGBoost
+├── model.joblib          # Saved Tuned Model
+├── eda_plots/            # AI Explainability Visualizations
+└── requirements.txt      # Project Dependencies
+```
 
 ## 🏗️ Architecture & Features
 
