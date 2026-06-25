@@ -14,6 +14,18 @@ A professional, end-to-end Machine Learning pipeline and Interactive Dashboard b
 Predicting whether an employee's income exceeds `$50K/yr` based on census data. This project solves the problem using advanced Machine Learning techniques, specifically addressing class imbalance and prioritizing model explainability (XAI) so stakeholders can understand *why* the model makes its decisions.
 
 ## 🏗️ Architecture & Features
+
+```mermaid
+graph TD
+    A[Raw CSV Data] --> B(Feature Engineering)
+    B -->|net_capital, is_full_time| C(Preprocessing Pipeline)
+    C -->|Scaling & Encoding| D{SMOTE Balancing}
+    D --> E[XGBoost Algorithm]
+    E -->|Hyperparameter Tuning| F(Optimized Model)
+    F --> G[SHAP Explainability Plots]
+    F --> H((Streamlit Dashboard))
+```
+
 * **Advanced Feature Engineering**: Automatic computation of custom features like `net_capital` and `is_full_time` to provide the model with deeper insights.
 * **Class Imbalance Handling**: Uses **SMOTE** (Synthetic Minority Over-sampling Technique) to ensure the model doesn't become biased towards the majority class.
 * **Hyperparameter Tuned XGBoost**: The core prediction engine is an `XGBClassifier` that was mathematically optimized using `RandomizedSearchCV` to achieve **>92% ROC-AUC**.
