@@ -1,0 +1,49 @@
+name: Reproduce income evaluation
+on:
+  pull_request:
+    paths:
+      - "train_model.py"
+      - "requirements.txt"
+      - ".github/workflows/evaluate.yml"
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      MPLBACKEND: Agg
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python train_model.py
+      - name: Check generated evaluation and reload saved model
+        run: |
+          python - <<'PY'
+          import json, joblib, pandas as pd
+          from sklearn.metrics import roc_auc_score
+          with open("evaluation.json") as handle:
+              result = json.load(handle)
+          assert 0 <= result["test_roc_auc"] <= 1
+          heldout = pd.read_csv("heldout.csv")
+          y = heldout.pop("income")
+          model = joblib.load("model.joblib")
+          reproduced = roc_auc_score(y, model.predict_proba(heldout)[:, 1])
+          assert abs(reproduced - result["test_roc_auc"]) < 1e-9
+          assert len(heldout) == result["test_rows"]
+          print(json.dumps(result, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: income-evaluation
+          path: |
+            evaluation.json
+            model.joblib
+            heldout.csv
+            eda_plots/
+          retention-days: 7
