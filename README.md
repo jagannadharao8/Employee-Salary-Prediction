@@ -1,84 +1,24 @@
-# 📊 Employee Salary ML Prediction System
+# Income Classification Explorer
+Educational portfolio project by Jalla Jagannadharao.
 
-![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.36-FF4B4B?logo=streamlit&logoColor=white)
-![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.4-F7931E?logo=scikit-learn&logoColor=white)
-![XGBoost](https://img.shields.io/badge/XGBoost-2.0-blue?logo=xgboost)
-![SHAP](https://img.shields.io/badge/SHAP-Explainable%20AI-success)
+Predicts census income category (>50K or <=50K), not a numerical salary. The current training script compares Logistic Regression and XGBoost using training-only cross-validation, with preprocessing and SMOTE inside each pipeline. A stratified 20% test set is evaluated only after model selection.
 
-A professional, end-to-end Machine Learning pipeline and Interactive Dashboard built to predict employee salaries based on demographic and professional features.
-
-![Dashboard Preview](dashboard.png)
-
----
-
-## 🚀 Problem Statement
-Predicting whether an employee's income exceeds `$50K/yr` based on census data. This project solves the problem using advanced Machine Learning techniques, specifically addressing class imbalance and prioritizing model explainability (XAI) so stakeholders can understand *why* the model makes its decisions.
-
-## 📂 Repository Structure
-```text
-├── app.py                # Streamlit Web Dashboard
-├── train_model.py        # ML Training Pipeline & XGBoost
-├── model.joblib          # Saved Tuned Model
-├── eda_plots/            # AI Explainability Visualizations
-└── requirements.txt      # Project Dependencies
-```
-
-## 🏗️ Architecture & Features
-
-```mermaid
-graph TD
-    A[Raw CSV Data] --> B(Feature Engineering)
-    B -->|net_capital, is_full_time| C(Preprocessing Pipeline)
-    C -->|Scaling & Encoding| D{SMOTE Balancing}
-    D --> E[XGBoost Algorithm]
-    E -->|Hyperparameter Tuning| F(Optimized Model)
-    F --> G[SHAP Explainability Plots]
-    F --> H((Streamlit Dashboard))
-```
-
-* **Advanced Feature Engineering**: Automatic computation of custom features like `net_capital` and `is_full_time` to provide the model with deeper insights.
-* **Class Imbalance Handling**: Uses **SMOTE** (Synthetic Minority Over-sampling Technique) to ensure the model doesn't become biased towards the majority class.
-* **Hyperparameter Tuned XGBoost**: The core prediction engine is an `XGBClassifier` that was mathematically optimized using `RandomizedSearchCV` to achieve **>92% ROC-AUC**.
-* **Model Explainability (SHAP)**: Fully transparent decision making. The pipeline generates SHAP summary plots to mathematically prove feature importance.
-* **Interactive Dashboard**: A custom **Streamlit** web application serving as a production UI. Users can filter cohorts and run the ML model on the fly to generate visual KPIs and confidence metrics.
-
----
-
-## 💻 Installation & Usage
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/jagannadharao8/Employee-Salary-Prediction.git
-cd Employee-Salary-Prediction
-```
-
-2. **Install dependencies**
-```bash
+## Reproduce
+Use the pinned requirements and Python 3.10/3.11:
+```sh
 pip install -r requirements.txt
-```
-
-3. **Train the Model (Optional)**
-The repository comes with a pre-trained `model.joblib`. If you wish to retrain it, run:
-```bash
 python train_model.py
-```
-*(This will execute the hyperparameter tuning and generate new EDA/SHAP plots in the `eda_plots/` directory).*
-
-4. **Launch the Dashboard**
-```bash
 streamlit run app.py
 ```
-*(Navigate to `http://localhost:8501` in your browser to use the interactive dashboard).*
+Generated outputs: model.joblib, evaluation.json, heldout.csv, and optional SHAP plots in eda_plots. A SHAP failure does not prevent saving the model or evaluation. Linear/tree explanations are selected according to the winning model.
 
----
+## Results status
+A corrected GitHub Actions run completed on 28 October 2026: XGBoost selected by training-only CV (ROC-AUC 0.9228), with held-out ROC-AUC 0.9207 and accuracy 0.8529 on 9,758 test rows. These are results for this census-data split. See docs/evaluation-2026-10-28.json and https://github.com/jagannadharao8/Employee-Salary-Prediction/actions/runs/40697955712 . Reloading the generated model reproduced held-out ROC-AUC; SHAP generation succeeded. Run artifacts have seven-day retention. The existing committed model.joblib may be from an older training protocol and must be regenerated before deployment. Previous Random Forest and XGBoost descriptions referred to different project versions and are not comparable benchmark evidence.
 
-## 🧠 Behind the Scenes: EDA & Explainability
-During training, the pipeline generates crucial insights:
-* **Feature Correlation**: Maps out the mathematical relationships between features.
-* **SHAP Values**: Proves that features like *Age*, *Education*, and *Marital Status* are the strongest predictors of high income.
+The dashboard's agreement on displayed rows includes training records. It is explicitly not held-out test accuracy. Use evaluation.json for the saved run's test results. Model scores are not guaranteed calibrated probabilities.
 
-These visual insights are embedded directly into the Streamlit app under the **Model Explainability** tab!
+## Limitations
+SMOTE after one-hot encoding can interpolate categorical indicator values; compare class-weighted baselines or an appropriate mixed-type sampler in future evaluation. Census attributes can encode social bias; SHAP describes model associations, not causal explanations. This demonstration must not be used to make hiring or salary decisions.
 
----
-*Built as a professional capstone for the Edunet IBM Internship.*
+## Repository organisation
+Application entry points are app.py and train_model.py. Historical root-level coursework PDFs, slides and certificates are preserved under docs/learning-archive; code screenshots are under docs/legacy-screenshots. Application code and dataset paths remain at the root. Dataset provenance, licence and exact training environment should accompany published results.
