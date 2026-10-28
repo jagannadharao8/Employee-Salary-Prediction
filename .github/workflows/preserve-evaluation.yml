@@ -1,0 +1,60 @@
+name: Preserve verified income model
+on:
+  push:
+    branches: [fix/portfolio-reliability-20261028]
+    paths: [.github/workflows/preserve-evaluation.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/portfolio-reliability-20261028
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: income-evaluation
+          run-id: 40697955712
+          github-token: ${{ github.token }}
+          path: verified-artifacts
+      - name: Verify the generated model before replacing historical artifacts
+        run: |
+          python - <<'PY'
+          import json, joblib, pandas as pd, hashlib, shutil
+          from pathlib import Path
+          from sklearn.metrics import roc_auc_score
+          root = Path("verified-artifacts")
+          evaluation = json.loads((root / "evaluation.json").read_text())
+          heldout = pd.read_csv(root / "heldout.csv")
+          y = heldout.pop("income")
+          model = joblib.load(root / "model.joblib")
+          assert abs(roc_auc_score(y, model.predict_proba(heldout)[:, 1]) - evaluation["test_roc_auc"]) < 1e-9
+          assert len(heldout) == evaluation["test_rows"] == 9758
+          for source in root.rglob("*"):
+              if source.is_file():
+                  target = Path(source.relative_to(root))
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copy2(source, target)
+          digest = hashlib.sha256(Path("model.joblib").read_bytes()).hexdigest()
+          Path("model.sha256").write_text(digest + "\n")
+          evaluation["model_sha256"] = digest
+          evaluation["workflow_run_url"] = "https://github.com/jagannadharao8/Employee-Salary-Prediction/actions/runs/40697955712"
+          Path("evaluation.json").write_text(json.dumps(evaluation, indent=2) + "\n")
+          PY
+      - name: Commit only verified evaluation artifacts to the repair branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add model.joblib model.sha256 evaluation.json heldout.csv eda_plots/
+          if ! git diff --cached --quiet; then
+            git commit -m "Preserve verified model, held-out evaluation and matching SHAP plots"
+            git push origin HEAD:fix/portfolio-reliability-20261028
+          fi
