@@ -10,11 +10,24 @@ import joblib
 import pandas as pd
 import numpy as np
 import os
+import json
 
 # Set page config
 st.set_page_config(page_title="Employee ML Prediction & Search", page_icon="🔍", layout="wide")
 
-st.title("🔍 Targeted ML Salary Predictions")
+st.title("Income Classification Explorer")
+st.caption("Educational census-data classification; not a salary estimate or a tool for employment decisions.")
+st.warning("Displayed-row agreement includes training records and is not held-out accuracy.")
+if os.path.exists("evaluation.json"):
+    with open("evaluation.json", encoding="utf-8") as handle:
+        evaluation = json.load(handle)
+    st.write("Saved evaluation:", evaluation)
+else:
+    st.info("No evaluation.json from the corrected training protocol is available. Retrain before quoting performance.")
+if os.path.exists("eda_plots/shap_summary.png"):
+    with st.expander("Feature attribution (SHAP)"):
+        st.image("eda_plots/shap_summary.png")
+        st.caption("This plot must come from the same training run as the loaded model.")
 st.write("Filter your actual employee data and run the Machine Learning model on specific groups (e.g., all Single Males)!")
 
 # Check if model exists
@@ -103,7 +116,7 @@ st.dataframe(filtered_data.head(10)) # show preview
 
 st.write("---")
 st.subheader("2. Run Machine Learning Predictions")
-st.write("Press the button below to use the ML model to predict the salaries of these specific employees and compare them against their actual income!")
+st.write("Press the button below to use the ML model to classify income categories of these specific employees and compare them against their actual income!")
 
 if st.button("Run ML Prediction on Filtered Data", type="primary"):
     if len(filtered_data) == 0:
@@ -130,11 +143,11 @@ if st.button("Run ML Prediction on Filtered Data", type="primary"):
             # Create a results dataframe
             results_df = filtered_data.copy()
             results_df['ML Predicted Income'] = np.where(predictions == 1, '>50K', '<=50K')
-            results_df['Confidence (>50K)'] = (probabilities * 100).round(2).astype(str) + '%'
+            results_df['Model score (>50K)'] = (probabilities * 100).round(2).astype(str) + '%'
             
             # Move the new columns to the front for easier viewing
             cols = results_df.columns.tolist()
-            cols = ['ML Predicted Income', 'Confidence (>50K)', 'income'] + [c for c in cols if c not in ['ML Predicted Income', 'Confidence (>50K)', 'income']]
+            cols = ['ML Predicted Income', 'Model score (>50K)', 'income'] + [c for c in cols if c not in ['ML Predicted Income', 'Model score (>50K)', 'income']]
             results_df = results_df[cols]
             
             st.success(f"✅ Successfully ran ML predictions for {len(results_df)} employees!")
@@ -153,7 +166,7 @@ if st.button("Run ML Prediction on Filtered Data", type="primary"):
             with col2:
                 st.metric("Predicted >$50K", f"{predicted_high:,}")
             with col3:
-                st.metric("Model Accuracy", f"{accuracy:.1f}%")
+                st.metric("Agreement on displayed rows", f"{accuracy:.1f}%")
                 
             st.markdown("### 📈 Visual Insights")
             
@@ -171,7 +184,7 @@ if st.button("Run ML Prediction on Filtered Data", type="primary"):
             st.bar_chart(chart_data)
             
             # Histogram for confidence
-            st.write("**Model Confidence Spread**")
+            st.write("**Model score distribution**")
             fig, ax = plt.subplots(figsize=(8, 3))
             ax.hist(probabilities * 100, bins=20, color='teal', edgecolor='black', alpha=0.7)
             ax.set_title("How Confident is the Model? (Probability Spread)")
