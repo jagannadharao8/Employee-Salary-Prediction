@@ -13,7 +13,7 @@ streamlit run app.py
 Generated outputs: model.joblib, evaluation.json, heldout.csv, and optional SHAP plots in eda_plots. A SHAP failure does not prevent saving the model or evaluation. Linear/tree explanations are selected according to the winning model.
 
 ## Results status
-No new accuracy or ROC-AUC claim is made until the corrected script is executed and evaluation.json reviewed. The existing committed model.joblib may be from an older training protocol and must be regenerated before deployment. Previous Random Forest and XGBoost descriptions referred to different project versions and are not comparable benchmark evidence.
+A corrected GitHub Actions run completed on 28 October 2026: XGBoost selected by training-only CV (ROC-AUC 0.9228), with held-out ROC-AUC 0.9207 and accuracy 0.8529 on 9,758 test rows. These are results for this census-data split. See docs/evaluation-2026-10-28.json and https://github.com/jagannadharao8/Employee-Salary-Prediction/actions/runs/40697955712 . Reloading the generated model reproduced held-out ROC-AUC; SHAP generation succeeded. Run artifacts have seven-day retention. The existing committed model.joblib may be from an older training protocol and must be regenerated before deployment. Previous Random Forest and XGBoost descriptions referred to different project versions and are not comparable benchmark evidence.
 
 The dashboard's agreement on displayed rows includes training records. It is explicitly not held-out test accuracy. Use evaluation.json for the saved run's test results. Model scores are not guaranteed calibrated probabilities.
 
