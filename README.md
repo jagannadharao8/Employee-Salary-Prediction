@@ -21,4 +21,4 @@ The dashboard's agreement on displayed rows includes training records. It is exp
 SMOTE after one-hot encoding can interpolate categorical indicator values; compare class-weighted baselines or an appropriate mixed-type sampler in future evaluation. Census attributes can encode social bias; SHAP describes model associations, not causal explanations. This demonstration must not be used to make hiring or salary decisions.
 
 ## Repository organisation
-Application entry points are app.py and train_model.py. Historical coursework, slides and certificates are learning materials rather than model evaluation evidence; they remain preserved pending organisation. Dataset provenance, licence and exact training environment should accompany published results.
+Application entry points are app.py and train_model.py. Historical root-level coursework PDFs, slides and certificates are preserved under docs/learning-archive; code screenshots are under docs/legacy-screenshots. Application code and dataset paths remain at the root. Dataset provenance, licence and exact training environment should accompany published results.
