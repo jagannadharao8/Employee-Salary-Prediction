@@ -1,133 +1,30 @@
-# Presentation
+# Income Classification Explorer — interview presentation outline
 
-## Overview
+This outline describes the current implementation. Historical slides under docs/learning-archive contain earlier experiments and metrics; they are not the current benchmark.
 
-A comprehensive **8-slide professional PowerPoint presentation** covering the Employee Salary Prediction project. This presentation is designed for:
-- Job interviews and internship presentations
-- College project presentations
-- Technical discussions with HR/business teams
-- Portfolio showcasing
+## 1. Problem and scope
+Classify a census record into income above or at most $50K. This is an educational classification demonstration, not a prediction of a person's numerical salary and not a tool for recruitment or compensation decisions.
 
----
+## 2. Data and split
+The supplied repository CSV is deduplicated before a stratified 80/20 split. The verified run used 39,032 training rows and 9,758 held-out test rows. Dataset source and licensing provenance still need independent documentation.
 
-## Presentation Slides
+## 3. Training pipeline
+Preprocessing and SMOTE are inside the cross-validation pipeline. Compare Logistic Regression and XGBoost with training-only three-fold CV; choose the model without consulting held-out labels.
 
-### 1. **Title Slide** - Project Introduction
-- Project name: Employee Salary Prediction
-- Subtitle: Machine Learning Classification Model
-- Presenter info: By Jagannadharao | IBM Edunet Internship
-- Professional theme with blue and green design
+## 4. Selection and results
+XGBoost was selected with CV ROC-AUC 0.9228. The single held-out evaluation produced ROC-AUC 0.9207 and accuracy 85.29%. For the higher-income class, precision was 0.6680, recall 0.7667 and F1 0.7140 on 2,336 rows. These figures apply only to this dataset split.
 
-### 2. **Problem Statement**
-- Predict if employee earns >$50K or ≤$50K
-- Use demographic and employment features
-- Help HR teams make data-driven decisions
-- Automate high-income employee identification
+## 5. Explainability
+Choose LinearExplainer or TreeExplainer according to the fitted model. The verified XGBoost run generated a SHAP summary. Explanations describe fitted associations, not causality, fairness or guaranteed correctness.
 
-### 3. **Dataset Overview**
-- Size: 48,842 employee records (45,222 after preprocessing)
-- Features: 15 attributes (demographics & employment)
-- Target: Binary classification (≤$50K vs >$50K)
-- Class distribution: 82% low income, 18% high income
+## 6. Application and artifacts
+The Streamlit application loads the saved pipeline and evaluation metadata. The default branch contains model.joblib, heldout.csv, evaluation.json, model.sha256 and generated plots. Displayed-row agreement includes training rows and is labelled separately from held-out accuracy.
 
-### 4. **Model & Methodology**
-- Algorithm: Random Forest Classifier
-- Number of trees: 100
-- Key features: Age, Education, Occupation, Hours/week
-- Data split: 80% training, 20% testing
-- Preprocessing: Encoding, scaling, handling missing values
+## 7. Reproducibility evidence
+[Training and model reload verification](https://github.com/jagannadharao8/Employee-Salary-Prediction/actions/runs/40697955712).
+The saved pipeline reproduced the held-out ROC-AUC. Use requirements.txt and train_model.py to reproduce the protocol; inspect evaluation.json for exact results and artifact checksum.
 
-### 5. **Model Performance & Metrics**
-- Overall Accuracy: 77.2%
-- Precision for >$50K: 54%
-- Recall for ≤50K: 89%
-- Successfully identifies low-income earners
-- Good balance between model complexity and accuracy
+## 8. Limitations and next experiment
+SMOTE can interpolate one-hot categorical indicators. Compare class weighting and mixed-type sampling on training folds. Investigate provenance, class-wise performance and fairness before considering any real-world use. Model outputs are not calibrated probabilities.
 
-### 6. **Key Insights & Feature Importance**
-Most Important Features:
-1. **Age** - Strongest predictor of income
-2. **Education level** - Higher education = higher income
-3. **Hours per week** - More hours worked increase income
-4. **Occupation type** - Certain jobs pay more
-5. **Relationship status** - Affects income patterns
-
-### 7. **Business Applications & Use Cases**
-- HR Salary Benchmarking
-- Recruitment & Compensation Planning
-- Career Development Guidance
-- Identifying Compensation Equity Issues
-- Workforce Segmentation & Analytics
-
-### 8. **Conclusion & Future Work**
-**Achievements:**
-- ✓ Successfully built a 77.2% accurate model
-- ✓ Identified key factors affecting income levels
-- ✓ Practical applications for HR departments
-
-**Future Improvements:**
-- Apply SMOTE for better class balance
-- Try XGBoost or LightGBM algorithms
-- Deploy as REST API for production use
-
----
-
-## Design Details
-
-- **Theme**: Professional "Focus" theme with blue and green colors
-- **Format**: 16:9 widescreen aspect ratio
-- **Font**: Clean, readable sans-serif fonts
-- **Duration**: ~8-10 minutes presentation time
-- **Content**: Balanced between visuals and key bullet points
-
----
-
-## How to Use
-
-1. Download the PowerPoint file
-2. Open in Microsoft PowerPoint, Google Slides, or LibreOffice
-3. Customize with your speaking notes
-4. Add video or demo sections if needed
-5. Practice timing to deliver in 8-10 minutes
-
----
-
-## File Information
-
-- **Format**: Microsoft PowerPoint (.pptx)
-- **Slides**: 8 slides
-- **Created**: Google Slides (compatible with all major platforms)
-- **Language**: English
-- **Accessibility**: High contrast colors and readable fonts
-
----
-
-## Tips for Presentation
-
-✅ **Do:**
-- Practice delivering smoothly
-- Spend 1-2 minutes per slide
-- Use the notes section for speaker points
-- Make eye contact with the audience
-- Explain technical concepts simply
-
-❌ **Avoid:**
-- Reading directly from slides
-- Going too fast through technical content
-- Over-explaining obvious points
-- Skipping the business applications slide
-
----
-
-## Customization Ideas
-
-- Add your personal photo on title slide
-- Include team member names if applicable
-- Add company logos if presenting to organizations
-- Update metrics if using new models
-- Add animated transitions for engagement
-
----
-
-**Last Updated**: February 2026  
-**Status**: Production Ready
+Updated 28 October 2026. This is a speaking outline; it does not claim that a new PowerPoint deck was generated.
