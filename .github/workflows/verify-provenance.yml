@@ -1,8 +1,7 @@
 name: Verify census dataset provenance
 on:
-  push:
-    branches: [docs/verify-dataset-provenance-20261123]
-    paths: [scripts/verify_dataset_provenance.py, .github/workflows/verify-provenance.yml]
+  pull_request:
+    paths: [employeedata.csv, app.py, scripts/verify_dataset_provenance.py, .github/workflows/verify-provenance.yml]
   workflow_dispatch:
 permissions:
   contents: read
