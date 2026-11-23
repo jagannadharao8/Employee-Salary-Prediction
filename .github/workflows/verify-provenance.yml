@@ -1,0 +1,24 @@
+name: Verify census dataset provenance
+on:
+  pull_request:
+    paths: [employeedata.csv, app.py, scripts/verify_dataset_provenance.py, .github/workflows/verify-provenance.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m py_compile app.py scripts/verify_dataset_provenance.py
+      - run: python scripts/verify_dataset_provenance.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dataset-provenance
+          path: docs/data-provenance-verification.json
+          retention-days: 7
