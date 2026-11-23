@@ -13,10 +13,11 @@ import os
 import json
 
 # Set page config
-st.set_page_config(page_title="Employee ML Prediction & Search", page_icon="🔍", layout="wide")
+st.set_page_config(page_title="Income Classification Explorer", page_icon="🔍", layout="wide")
 
 st.title("Income Classification Explorer")
-st.caption("Educational census-data classification; not a salary estimate or a tool for employment decisions.")
+st.caption("Educational classification using UCI Adult records extracted from the 1994 US Census. Model scores are uncalibrated.")
+st.caption("Source: https://archive.ics.uci.edu/dataset/2/adult · Becker & Kohavi (1996) · CC BY 4.0")
 st.warning("Displayed-row agreement includes training records and is not held-out accuracy.")
 if os.path.exists("evaluation.json"):
     with open("evaluation.json", encoding="utf-8") as handle:
@@ -116,7 +117,7 @@ st.dataframe(filtered_data.head(10)) # show preview
 
 st.write("---")
 st.subheader("2. Run Machine Learning Predictions")
-st.write("Press the button below to use the ML model to classify income categories of these specific employees and compare them against their actual income!")
+st.write("Classify the selected census records and compare predictions with their recorded income categories.")
 
 if st.button("Run ML Prediction on Filtered Data", type="primary"):
     if len(filtered_data) == 0:
@@ -187,8 +188,8 @@ if st.button("Run ML Prediction on Filtered Data", type="primary"):
             st.write("**Model score distribution**")
             fig, ax = plt.subplots(figsize=(8, 3))
             ax.hist(probabilities * 100, bins=20, color='teal', edgecolor='black', alpha=0.7)
-            ax.set_title("How Confident is the Model? (Probability Spread)")
-            ax.set_xlabel("Confidence % that income is >$50K")
+            ax.set_title("Distribution of uncalibrated model scores")
+            ax.set_xlabel("Model score for income >$50K (%)")
             ax.set_ylabel("Number of Employees")
             st.pyplot(fig)
             
@@ -202,7 +203,7 @@ if st.button("Run ML Prediction on Filtered Data", type="primary"):
                 st.download_button(
                     label="Download Results as CSV",
                     data=csv_export,
-                    file_name="filtered_salary_predictions.csv",
+                    file_name="census_income_predictions.csv",
                     mime="text/csv",
                 )
         except Exception as e:
