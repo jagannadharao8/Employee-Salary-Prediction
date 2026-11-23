@@ -190,7 +190,7 @@ if st.button("Run ML Prediction on Filtered Data", type="primary"):
             ax.hist(probabilities * 100, bins=20, color='teal', edgecolor='black', alpha=0.7)
             ax.set_title("Distribution of uncalibrated model scores")
             ax.set_xlabel("Model score for income >$50K (%)")
-            ax.set_ylabel("Number of Employees")
+            ax.set_ylabel("Number of census records")
             st.pyplot(fig)
             
             st.write("---")
